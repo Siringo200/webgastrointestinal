@@ -1,4 +1,5 @@
 Flask>=3.0.3
-tensorflow>=2.17.0  # Versi yang kompatibel dengan Python 3.9
-numpy>=1.26.4      # Versi yang kompatibel dengan Python 3.9
-Pillow>=10.3.0   
+tensorflow>=2.17.0
+numpy>=1.26.4
+Pillow>=10.3.0
+gunicorn>=20.1.0
