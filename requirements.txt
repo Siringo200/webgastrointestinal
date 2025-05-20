@@ -1,4 +1,5 @@
-Flask>=2.0.0
-tensorflow>=2.12.0  # TensorFlow 2.12+ diperlukan untuk Python 3.11
-numpy>=1.23.0       # Versi yang lebih baru untuk kompatibilitas Python 3.11
-Pillow>=9.2.0       # Versi yang lebih baru untuk kompatibilitas Python 3.11
+Flask>=3.0.3
+tensorflow>=2.17.0  # TensorFlow 2.12+ diperlukan untuk Python 3.11
+numpy>=1.26.4       # Versi yang lebih baru untuk kompatibilitas Python 3.11
+Pillow>=10.3.0       # Versi yang lebih baru untuk kompatibilitas Python 3.11
+pip  >= 24.0
