@@ -1,0 +1,76 @@
+
+body {
+    background-color: #f4f6f9;
+    font-family: 'Poppins', sans-serif;
+}
+
+.card-header {
+    background-color: #0076f5;
+    color: #fff;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+.btn-primary {
+    width: 100%;
+    font-size: 18px;
+}
+
+.form-control-file {
+    border: 1px solid #ced4da;
+    padding: 15px;
+}
+
+.result-box {
+    background-color: #d1ecf1;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.result-box p {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.file-input-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.file-input-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.file-input-btn:hover {
+    background-color: #0056b3;
+}
+
+.file-input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 0;
+}
+
+.file-name {
+    margin-left: 10px;
+    font-weight: bold;
+    font-size: 16px;
+}
+ /* Mengatur tampilan gambar di carousel */
+ #carouselClasses .carousel-item img {
+    height: 300px;       /* Ubah sesuai kebutuhan */
+    object-fit: cover;   /* Memastikan gambar tetap proporsional */
+    width: 100%;
+  }
+  

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tugas Akhir Kevin</title>
+    <link rel="apple-touch-icon" href="apple-icon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <!-- CSS Stylesheets -->
+    <link rel="stylesheet" href="/static/sufeadmin/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/sufeadmin/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/static/sufeadmin/assets/css/themify-icons.css">
+    <link rel="stylesheet" href="/static/sufeadmin/assets/css/cs-skin-elastic.css">
+    <link rel="stylesheet" href="/static/sufeadmin/assets/scss/style.css">
+    <link rel="stylesheet" href="/static/sufeadmin/assets/css/styles.css">
+    <link rel="stylesheet" href="/static/sufeadmin/assets/css/style.css">
+</head>
+<body>
+
+    <!-- Left Panel (Sidebar) -->
+    <aside id="left-panel" class="left-panel">
+        <nav class="navbar navbar-expand-sm navbar-default">
+            <div class="navbar-header">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#main-menu"
+                        aria-controls="main-menu" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+            <div id="main-menu" class="main-menu collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="{{ url_for('main') }}"> <i class="menu-icon fa fa-image"></i> Beranda </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Right Panel (Content) -->
+    <div id="right-panel" class="right-panel">
+        <!-- Header -->
+        <header id="header" class="header">
+            <div class="header-menu">
+                <div class="col-sm-7">
+                    <a id="menuToggle" class="menutoggle pull-left"><i class="fa fa fa-tasks"></i></a>
+                </div>
+                <div class="col-sm-5">
+                    <div class="user-area dropdown float-right">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                           aria-expanded="false">
+                            <img class="user-avatar rounded-circle" src="/static/sufeadmin/images/admin.jpg" alt="Avatar Pengguna">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="container mt-4">
+            <!-- Enhanced Home Page Section (Judul dan Deskripsi) -->
+            <div class="row justify-content-center">
+                <div class="col-md-10 text-center home-section">
+                    <h1 class="main-title animated-title mb-4">Prediksi Penyakit Gastrointestinal</h1>
+                    <div class="title-underline"></div>
+                    <p class="lead mt-4">Unggah gambar medis untuk memprediksi keberadaan penyakit gastrointestinal.</p>
+                    <hr class="styled-hr">
+                    <p class="welcome-text">Selamat datang di Sistem Klasifikasi Penyakit GI. Silakan unggah gambar untuk analisis.</p>
+                </div>
+            </div>
+            <!-- End Enhanced Home Page Section -->
+
+            <!-- Display error message if there is one -->
+            {% if error %}
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fa fa-exclamation-triangle"></i> <strong>Error:</strong> {{ error }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="row mt-5">
+                <!-- Left Section: Upload File & Model Selection -->
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Pemindaian Penyakit Gastrointestinal</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action="/submit" method="post" enctype="multipart/form-data" id="prediction-form" onsubmit="return validateForm()">
+                                <!-- Custom File Input with supported formats -->
+                                <div class="form-group">
+                                    <label for="file-input" class="form-label">Unggah Berkas Medis</label>
+                                    <div class="custom-file">
+                                        <input type="file" id="file-input" name="my_image" class="custom-file-input" accept="image/*" required>
+                                        <label class="custom-file-label" for="file-input">Pilih berkas</label>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        Format yang didukung: PNG, JPG, JPEG, GIF, BMP, TIFF
+                                    </small>
+                                    <div class="invalid-feedback" id="file-error" style="display: none;">
+                                        Format file tidak didukung. Hanya file gambar yang diizinkan.
+                                    </div>
+                                </div>
+                                <!-- Modern Dropdown for Model Selection -->
+                                <div class="form-group">
+                                    <label for="model_choice">Pilih Model:</label>
+                                    <select name="model_choice" id="model_choice" class="custom-select">
+                                        <option value="ResNet50">ResNet50</option>
+                                        <option value="InceptionV3">InceptionV3</option>
+                                        <option value="Average Ensemble">Average Ensemble</option>
+                                        <option value="Stacking Ensemble">Stacking Ensemble</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Add CSV export option checkbox -->
+                                <div class="form-group form-check">
+                                    <input type="checkbox" class="form-check-input" id="export_csv" name="export_csv">
+                                    <label class="form-check-label" for="export_csv">Export hasil klasifikasi ke CSV</label>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-submit">Kirim</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Section: Classification Result -->
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Hasil Klasifikasi</h4>
+                        </div>
+                        <div class="card-body text-center">
+                            <!-- Add loading bar container - hidden by default -->
+                            <div id="loading-container" class="loading-container" style="display: none;">
+                                <p class="processing-text"><i class="fa fa-stethoscope pulse"></i> Menganalisis Gambar...</p>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" 
+                                         aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                                </div>
+                                <p class="mt-2 loading-message">Mohon Tunggu</p>
+                            </div>
+                            
+                            <div id="result-container">
+                                {% if prediction %}
+                                    <!-- Menampilkan gambar hasil upload dengan class img-fluid -->
+                                    <img src="{{ img_path }}" class="img-fluid mb-4 result-image" alt="Gambar Terunggah">
+                                    
+                                    <!-- Structured Result Display -->
+                                        <div class="result-header">
+                                            <i class="fa fa-check-circle result-icon"></i>
+                                            <h3 class="result-title">Hasil Analisis</h3>
+                                        </div>
+                                        
+                                        <!-- Result with conditional color coding -->
+                                        <div class="diagnosis-container">
+                                            <h2 class="diagnosis-result 
+                                                {% if confidence > 0.8 %}high-confidence
+                                                {% elif confidence > 0.6 %}medium-confidence
+                                                {% else %}low-confidence{% endif %}">
+                                                {{ prediction }}
+                                            </h2>
+                                        </div>
+                                        
+                                        <!-- Disease Information Section -->
+                                        <div class="disease-info-container">
+                                            <div class="disease-info-header" id="info-toggle">
+                                                <span class="disease-info-title">Tentang kondisi ini</span>
+                                                <i class="fa fa-info-circle info-icon"></i>
+                                            </div>
+                                            
+                                            <div class="disease-info-content" id="disease-details">
+                                                {% if prediction == "dyed-lifted-polyps" %}
+                                                    <p>Ini adalah polip yang ditandai dengan pewarna selama endoskopi untuk memvisualisasikan dengan lebih baik sebelum pengangkatan. Teknik ini meningkatkan visibilitas jaringan abnormal.</p>
+                                                    <ul>
+                                                        <li><strong>Lokasi umum:</strong> Usus besar, rektum</li>
+                                                        <li><strong>Signifikansi klinis:</strong> Deteksi dini dan pengangkatan mencegah perkembangan menjadi kanker</li>
+                                                    </ul>
+                                                
+                                                {% elif prediction == "dyed-resection-margins" %}
+                                                    <p>Ini adalah tepi jaringan setelah pengangkatan lesi, ditandai dengan pewarna untuk memastikan eksisi lengkap jaringan abnormal.</p>
+                                                    <ul>
+                                                        <li><strong>Tujuan:</strong> Mengkonfirmasi pengangkatan lengkap jaringan abnormal</li>
+                                                        <li><strong>Tindak lanjut:</strong> Biasanya memerlukan pengawasan berkala</li>
+                                                    </ul>
+                                                
+                                                {% elif prediction == "esophagitis" %}
+                                                    <p>Peradangan pada esofagus, sering menyebabkan nyeri saat menelan, mulas, dan nyeri dada. Penyebab umum termasuk refluks asam, infeksi, atau reaksi alergi.</p>
+                                                    <ul>
+                                                        <li><strong>Gejala:</strong> Kesulitan menelan, mulas, nyeri dada</li>
+                                                        <li><strong>Pengobatan:</strong> Obat penurun asam, perubahan gaya hidup</li>
+                                                    </ul>
+                                                
+                                                {% elif prediction == "normal-cecum" %}
+                                                    <p>Penampilan normal sekum, yang merupakan awal usus besar. Tidak ada temuan patologis yang diamati.</p>
+                                                    <ul>
+                                                        <li><strong>Lokasi:</strong> Bagian pertama usus besar</li>
+                                                        <li><strong>Fungsi:</strong> Menyerap cairan dan garam dari bahan limbah</li>
+                                                    </ul>
+                                                
+                                                {% elif prediction == "normal-pylorus" %}
+                                                    <p>Penampilan normal pilorus, katup yang menghubungkan lambung ke usus kecil. Tidak ada kelainan yang terdeteksi.</p>
+                                                    <ul>
+                                                        <li><strong>Fungsi:</strong> Mengontrol perpindahan makanan dari lambung ke usus</li>
+                                                        <li><strong>Penampilan:</strong> Otot melingkar dengan bukaan tengah</li>
+                                                    </ul>
+                                                
+                                                {% elif prediction == "normal-z-line" %}
+                                                    <p>Penampilan normal Z-line (persimpangan gastroesofageal), tempat esofagus bertemu dengan lambung. Tidak ditemukan penyimpangan.</p>
+                                                    <ul>
+                                                        <li><strong>Signifikansi:</strong> Titik penting dalam menilai kondisi seperti Barrett's esophagus</li>
+                                                        <li><strong>Penampilan:</strong> Batas bergerigi antara esofagus dan lambung</li>
+                                                    </ul>
+                                                
+                                                {% elif prediction == "polyps" %}
+                                                    <p>Pertumbuhan jaringan abnormal yang menonjol dari selaput lendir. Meskipun sering jinak, beberapa dapat berkembang menjadi kanker seiring waktu jika tidak diangkat.</p>
+                                                    <ul>
+                                                        <li><strong>Faktor risiko:</strong> Usia di atas 50, riwayat keluarga, penyakit radang usus</li>
+                                                        <li><strong>Penanganan:</strong> Pengangkatan dan pemeriksaan patologis</li>
+                                                    </ul>
+                                                
+                                                {% elif prediction == "ulcerative-colitis" %}
+                                                    <p>Penyakit radang usus kronis yang menyebabkan peradangan dan ulkus pada saluran pencernaan, terutama mempengaruhi usus besar dan rektum.</p>
+                                                    <ul>
+                                                        <li><strong>Gejala:</strong> Nyeri perut, diare, pendarahan rektum, penurunan berat badan</li>
+                                                        <li><strong>Pengobatan:</strong> Obat anti-inflamasi, immunosupresan</li>
+                                                    </ul>
+                                                
+                                                {% else %}
+                                                    <p>Tidak ada informasi spesifik untuk kondisi ini. Silakan konsultasikan dengan profesional medis untuk informasi lebih lanjut.</p>
+                                                {% endif %}
+                                                
+                                                <div class="learn-more">
+                                                    <a href="javascript:void(0)" onclick="showResourcesModal('{{ prediction }}')" class="learn-more-link">
+                                                        <i class="fa fa-external-link"></i> Pelajari lebih lanjut
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Confidence with visual indicator -->
+                                        <div class="confidence-container">
+                                            <span class="confidence-label">Tingkat Kepercayaan:</span>
+                                            <div class="confidence-bar-container">
+                                                <div class="confidence-bar" style="width: {{ confidence * 100 }}%;">
+                                                    <span class="confidence-value">{{ "%.1f"|format(confidence * 100) }}%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Model information -->
+                                        <div class="model-info mt-3">
+                                            <span class="badge 
+                                                {% if 'ResNet' in request.form.get('model_choice') %}badge-primary
+                                                {% elif 'Inception' in request.form.get('model_choice') %}badge-info
+                                                {% elif 'Average' in request.form.get('model_choice') %}badge-success
+                                                {% else %}badge-warning{% endif %}">
+                                                {{ request.form.get('model_choice') }}
+                                            </span>
+                                        </div>
+                                        
+                                        <!-- Add CSV download button -->
+                                        {% if csv_filename %}
+                                        <div class="mt-3">
+                                            <a href="{{ url_for('download_csv', filename=csv_filename) }}" class="btn btn-info">
+                                                <i class="fa fa-download"></i> Download CSV Hasil Klasifikasi
+                                            </a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                {% elif error %}
+                                    <div class="error-result">
+                                        <i class="fa fa-exclamation-circle error-icon"></i>
+                                        <h3 class="error-title">Terjadi Kesalahan</h3>
+                                        <p class="error-message">{{ error }}</p>
+                                        <div class="mt-4">
+                                            <a href="{{ url_for('main') }}" class="btn btn-outline-secondary">
+                                                <i class="fa fa-refresh"></i> Coba Lagi
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="no-result">
+                                        <i class="fa fa-upload upload-icon"></i>
+                                        <p>Unggah gambar untuk melihat hasil klasifikasi</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Scripts -->
+        <script src="/static/sufeadmin/assets/js/vendor/jquery-2.1.4.min.js"></script>
+        <script src="/static/sufeadmin/assets/js/bootstrap.min.js"></script>
+        <script src="/static/sufeadmin/assets/js/main.js"></script>
+        <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    
+        <script>
+            // Update custom file input label when a file is selected
+            document.getElementById('file-input').addEventListener('change', function () {
+                var fileName = this.files.length > 0 ? this.files[0].name : 'Tidak ada file yang dipilih';
+                var label = this.nextElementSibling;
+                if (label) {
+                    label.textContent = fileName;
+                }
+                
+                // Validate file type on selection
+                validateFileType();
+            });
+
+            // Validate file type
+            function validateFileType() {
+                var fileInput = document.getElementById('file-input');
+                var filePath = fileInput.value;
+                var errorDisplay = document.getElementById('file-error');
+                
+                if(fileInput.files.length > 0) {
+                    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.bmp|\.tiff)$/i;
+                    
+                    if(!allowedExtensions.exec(filePath)) {
+                        errorDisplay.style.display = 'block';
+                        fileInput.value = '';
+                        fileInput.nextElementSibling.textContent = 'Pilih berkas';
+                        return false;
+                    } else {
+                        errorDisplay.style.display = 'none';
+                        return true;
+                    }
+                }
+                return true;
+            }
+            
+            // Form validation before submission
+            function validateForm() {
+                if(!validateFileType()) {
+                    return false;
+                }
+                
+                // Show loading container
+                document.getElementById('loading-container').style.display = 'block';
+                
+                // If there are previous results, hide them while processing
+                var resultContainer = document.getElementById('result-container');
+                resultContainer.style.opacity = '0.3';
+                
+                return true;
+            }
+
+            // Initialize the disease information section as collapsed
+            document.addEventListener('DOMContentLoaded', function() {
+                var diseaseDetails = document.getElementById('disease-details');
+                if (diseaseDetails) {
+                    diseaseDetails.style.maxHeight = '0px';
+                    
+                    // Add click event to toggle disease information
+                    document.getElementById('info-toggle').addEventListener('click', function() {
+                        if (diseaseDetails.style.maxHeight === '0px' || diseaseDetails.style.maxHeight === '') {
+                            diseaseDetails.style.maxHeight = diseaseDetails.scrollHeight + 'px';
+                            this.classList.add('active');
+                        } else {
+                            diseaseDetails.style.maxHeight = '0px';
+                            this.classList.remove('active');
+                        }
+                    });
+                }
+                
+                // Auto-dismiss alerts after 5 seconds
+                setTimeout(function() {
+                    $('.alert').alert('close');
+                }, 5000);
+            });
+
+            // Function to show resources modal with additional information
+            function showResourcesModal(condition) {
+                var resourcesContent = document.getElementById('resources-content');
+                var modalTitle = document.getElementById('resourcesModalLabel');
+                
+                // Set the modal title
+                modalTitle.innerText = 'Sumber Medis: ' + condition;
+                
+                // Prepare content based on condition
+                var content = '';
+                
+                switch(condition) {
+                    case 'dyed-lifted-polyps':
+                        content = `
+                            <h4>Polip Terangkat dengan Pewarna</h4>
+                            <p>Kromoendoskopi dengan pewarna digunakan untuk meningkatkan visualisasi polip selama kolonoskopi. Teknik ini meningkatkan tingkat deteksi dan membantu karakterisasi polip.</p>
+                            <h5>Sumber Eksternal:</h5>
+                            <ul>
+                                <li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5124697/" target="_blank">Kromoendoskopi dalam Skrining Kanker Usus Besar</a></li>
+                                <li><a href="https://www.giejournal.org/article/S0016-5107(17)32030-2/fulltext" target="_blank">Teknik Reseksi Mukosa Endoskopi</a></li>
+                            </ul>
+                        `;
+                        break;
+                    case 'dyed-resection-margins':
+                        content = `
+                            <h4>Tepi Reseksi dengan Pewarna</h4>
+                            <p>Setelah pengangkatan polip atau lesi, tepinya ditandai dengan pewarna untuk memastikan pengangkatan lengkap dan memfasilitasi pemeriksaan tindak lanjut.</p>
+                            <h5>Sumber Eksternal:</h5>
+                            <ul>
+                                <li><a href="https://www.giejournal.org/article/S0016-5107(15)02786-8/fulltext" target="_blank">Teknik Reseksi Endoskopi</a></li>
+                                <li><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6089587/" target="_blank">Margin dalam Reseksi Endoskopi</a></li>
+                            </ul>
+                        `;
+                        break;
+                    case 'esophagitis':
+                        content = `
+                            <h4>Esofagitis</h4>
+                            <p>Peradangan pada esofagus yang dapat menyebabkan nyeri saat menelan, mulas, dan nyeri dada. Penyebab umum termasuk GERD, infeksi, obat-obatan, dan reaksi alergi.</p>
+                            <h5>Sumber Eksternal:</h5>
+                            <ul>
+                                <li><a href="https://www.mayoclinic.org/diseases-conditions/esophagitis/symptoms-causes/syc-20361224" target="_blank">Mayo Clinic: Esofagitis</a></li>
+                                <li><a href="https://www.niddk.nih.gov/health-information/digestive-diseases/acid-reflux-ger-gerd-adults" target="_blank">NIDDK: Refluks Asam (GER & GERD)</a></li>
+                            </ul>
+                        `;
+                        break;
+                    // Add cases for other conditions
+                    default:
+                        content = `<p>Informasi tambahan tidak tersedia untuk kondisi ini. Silakan berkonsultasi dengan profesional kesehatan.</p>`;
+                }
+                
+                resourcesContent.innerHTML = content;
+                $('#resourcesModal').modal('show');
+            }
+        </script>
+
+        <!-- Add this modal at the end of the body -->
+        <div class="modal fade" id="resourcesModal" tabindex="-1" role="dialog" aria-labelledby="resourcesModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="resourcesModalLabel">Sumber Medis</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="resources-content">
+                            <!-- Content will be loaded dynamically -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
