@@ -1,4 +1,4 @@
 Flask>=2.0.0
-tensorflow>=2.6.0
-numpy>=1.19.0
-Pillow>=8.0.0
+tensorflow>=2.12.0  # TensorFlow 2.12+ diperlukan untuk Python 3.11
+numpy>=1.23.0       # Versi yang lebih baru untuk kompatibilitas Python 3.11
+Pillow>=9.2.0       # Versi yang lebih baru untuk kompatibilitas Python 3.11
