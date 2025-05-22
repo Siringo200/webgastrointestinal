@@ -26,8 +26,8 @@ def allowed_file(filename):
 # Muat semua model yang ingin disediakan
 try:
     model_resnet = load_model('modelResnet50Epoch.keras')
-    model_inception = load_model('modelAverage.keras')
-    model_averageEnsemble = load_model('modelAverage.keras')
+    model_inception = load_model('modelResnet50Epoch.keras')
+    model_averageEnsemble = load_model('hasil_ensembleStacking.keras')
     model_stackingEnsemble = load_model('hasil_ensembleStacking.keras')
 
     # Jika diperlukan, aktifkan predict_function (tergantung versi TF/Keras)
